@@ -1,4 +1,4 @@
-# Hire.AI - Enterprise-Grade AI-Assisted Job Search Platform
+# Hire.AI - AI-Assisted Job Search Platform
 
 A high-performance, enterprise-ready job search platform combining Go-based concurrent scraping with AI-powered multi-agent orchestration. Built following industry best practices for resilience, observability, and scalability.
 
