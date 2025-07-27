@@ -57,6 +57,29 @@ export-csv:
 export-json:
 	./bin/$(BINARY_NAME) -export json
 
+# Agent system commands
+setup-agents:
+	python setup_agents.py
+
+agents-help:
+	python agents/cli.py --help
+
+# Run orchestrator with default search
+run-agents:
+	python agents/cli.py orchestrator "software engineer,developer,python,java" --location "India,Remote,Bangalore" --max-results 30
+
+# Interactive question mode
+ask-agents:
+	python agents/cli.py question
+
+# Run specific agent search
+run-agent-search:
+	@if [ -z "$(KEYWORDS)" ]; then \
+		echo "Usage: make run-agent-search KEYWORDS=\"your keywords\" [LOCATION=\"location\"]"; \
+		exit 1; \
+	fi
+	python agents/cli.py agent "$(KEYWORDS)" --location "$(or $(LOCATION),India,Remote)" --max-results 25
+
 # Setup development environment
 setup:
 	@echo "Setting up development environment..."
@@ -69,22 +92,38 @@ setup:
 # Show help
 help:
 	@echo "Available commands:"
-	@echo "  build        - Build the application"
+	@echo ""
+	@echo "Go Scraper Commands:"
+	@echo "  build        - Build the Go application"
 	@echo "  run          - Run production config for India (70+ jobs)"
 	@echo "  run-custom   - Run with custom keywords (KEYWORDS and LOCATION vars)"
 	@echo "  run-india    - Run India-specific job boards"
 	@echo "  run-global   - Run global/remote job boards"
 	@echo "  export-csv   - Export existing data to CSV"
 	@echo "  export-json  - Export existing data to JSON"
+	@echo ""
+	@echo "Agentic AI Commands:"
+	@echo "  setup-agents     - Setup Python agent environment"
+	@echo "  run-agents       - Run AI orchestrator with default search"
+	@echo "  ask-agents       - Interactive AI question mode"
+	@echo "  run-agent-search - Run specific agent search (requires KEYWORDS)"
+	@echo "  agents-help      - Show detailed agent CLI help"
+	@echo ""
+	@echo "Development Commands:"
 	@echo "  dev          - Run in development mode with hot reload"
-	@echo "  deps         - Install dependencies"
+	@echo "  deps         - Install Go dependencies"
 	@echo "  test         - Run tests"
 	@echo "  clean        - Clean build artifacts"
 	@echo "  install      - Install binary to GOPATH/bin"
 	@echo "  setup        - Setup development environment"
 	@echo ""
 	@echo "Examples:"
+	@echo "  # Traditional Go scraping"
 	@echo "  make run                                          # Production India config (70+ jobs)"
 	@echo "  make run-custom KEYWORDS=\"python,django,api\" LOCATION=\"Mumbai\""
-	@echo "  make run-india KEYWORDS=\"java,spring,microservices\""
-	@echo "  make run-global KEYWORDS=\"golang,kubernetes,remote\""
+	@echo ""
+	@echo "  # AI-powered agentic search"
+	@echo "  make setup-agents                                 # First-time setup"
+	@echo "  make run-agents                                   # AI orchestrator search"
+	@echo "  make ask-agents                                   # Ask AI questions"
+	@echo "  make run-agent-search KEYWORDS=\"react,frontend\"  # Specific AI search"
