@@ -1,0 +1,290 @@
+{
+  "jobBoards": [
+    {
+      "name": "naukri-software-jobs",
+      "enabled": true,
+      "baseUrl": "https://www.naukri.com",
+      "searchPath": "/software-engineer-jobs",
+      "searchParams": {
+        "k": "software engineer developer",
+        "l": "bangalore mumbai delhi hyderabad pune chennai"
+      },
+      "scrapingMethod": "scraping",
+      "selectors": {
+        "jobContainer": ".jobTuple, .srp-jobtuple-wrapper, .sjw",
+        "title": ".title, .jobTuple-title a, .jobTitle",
+        "company": ".subTitle, .companyInfo, .company",
+        "location": ".locationsContainer, .location, .jobTuple-location",
+        "salary": ".salary, .jobTuple-salary, .salaryDetail",
+        "description": ".job-description, .jobTuple-description",
+        "link": ".title a, .jobTuple-title a",
+        "titleFallback": [".jobTitle", ".title", "h3 a"],
+        "companyFallback": [".company", ".subTitle", ".companyInfo"]
+      },
+      "rateLimit": 2000,
+      "maxResults": 50
+    },
+    {
+      "name": "indeed-india",
+      "enabled": true,
+      "baseUrl": "https://in.indeed.com",
+      "searchPath": "/jobs",
+      "searchParams": {
+        "q": "software engineer developer",
+        "l": "India"
+      },
+      "scrapingMethod": "scraping",
+      "selectors": {
+        "jobContainer": ".jobsearch-SerpJobCard, .slider_container, .job_seen_beacon",
+        "title": ".jobTitle a, h2 a span[title], .jobTitle-color-purple",
+        "company": ".companyName, .companyInfo .companyName",
+        "location": ".companyLocation, .locationsContainer",
+        "salary": ".salary-snippet, .salary",
+        "description": ".summary, .job-snippet",
+        "link": ".jobTitle a, h2 a"
+      },
+      "rateLimit": 3000,
+      "maxResults": 50
+    },
+    {
+      "name": "linkedin-india",
+      "enabled": true,
+      "baseUrl": "https://www.linkedin.com",
+      "searchPath": "/jobs/search",
+      "searchParams": {
+        "keywords": "software engineer",
+        "location": "India",
+        "f_TPR": "r604800"
+      },
+      "scrapingMethod": "scraping",
+      "selectors": {
+        "jobContainer": ".job-search-card, .jobs-search-results__list-item",
+        "title": ".job-search-card__title, h3 a",
+        "company": ".job-search-card__subtitle-primary-grouping strong",
+        "location": ".job-search-card__subtitle-secondary-grouping",
+        "salary": ".job-search-card__salary-info",
+        "description": ".job-search-card__snippet",
+        "link": ".job-search-card__title a, h3 a"
+      },
+      "rateLimit": 4000,
+      "maxResults": 40
+    },
+    {
+      "name": "instahyre-india",
+      "enabled": true,
+      "baseUrl": "https://www.instahyre.com",
+      "searchPath": "/search-jobs",
+      "searchParams": {
+        "skills": "software-engineer",
+        "city": "bangalore"
+      },
+      "scrapingMethod": "scraping",
+      "selectors": {
+        "jobContainer": ".job-card, .opportunity-card",
+        "title": ".job-title, .opportunity-title",
+        "company": ".company-name, .company",
+        "location": ".location, .job-location",
+        "salary": ".salary, .compensation",
+        "description": ".job-description, .description",
+        "link": ".job-title a, .opportunity-title a"
+      },
+      "rateLimit": 2500,
+      "maxResults": 30
+    },
+    {
+      "name": "angel-co-india",
+      "enabled": true,
+      "baseUrl": "https://angel.co",
+      "searchPath": "/jobs",
+      "searchParams": {
+        "role": "Software Engineer",
+        "location": "India"
+      },
+      "scrapingMethod": "scraping",
+      "selectors": {
+        "jobContainer": ".startup-list-item, .job-listing",
+        "title": ".startup-link, .job-title",
+        "company": ".company-name, .startup-name",
+        "location": ".location, .startup-location",
+        "salary": ".salary-range",
+        "description": ".startup-pitch, .job-description",
+        "link": ".startup-link"
+      },
+      "rateLimit": 3000,
+      "maxResults": 25
+    },
+    {
+      "name": "hn-whoishiring-rss",
+      "enabled": true,
+      "scrapingMethod": "rss",
+      "rssConfig": {
+        "name": "hn-whoishiring-rss",
+        "feedUrl": "https://hnrss.org/jobs",
+        "feedType": "rss",
+        "maxResults": 25,
+        "keywords": ["software", "engineer", "developer", "programming", "india", "remote"],
+        "excludeWords": ["intern", "unpaid"]
+      },
+      "rateLimit": 1000,
+      "maxResults": 25
+    },
+    {
+      "name": "remoteok-hybrid-india",
+      "enabled": true,
+      "baseUrl": "https://remoteok.io",
+      "searchPath": "/",
+      "searchParams": {},
+      "scrapingMethod": "scraping",
+      "selectors": {
+        "jobContainer": "tr.job, .job",
+        "title": "td.company h2, .position",
+        "company": "td.company h3, .company_name",
+        "location": "td.location, .location",
+        "salary": "td .salary, .salary",
+        "description": "td.company .company_name",
+        "link": "td.company a, .job a",
+        "titleFallback": [".position", ".job-title", "h2"],
+        "companyFallback": [".company", ".employer"]
+      },
+      "rateLimit": 3000,
+      "maxResults": 20
+    },
+    {
+      "name": "glassdoor-india",
+      "enabled": true,
+      "baseUrl": "https://www.glassdoor.co.in",
+      "searchPath": "/Job/jobs.htm",
+      "searchParams": {
+        "sc.keyword": "software engineer",
+        "locT": "C",
+        "locId": "115"
+      },
+      "scrapingMethod": "scraping",
+      "selectors": {
+        "jobContainer": ".react-job-listing, .jobContainer",
+        "title": ".jobTitle, .jobInfoItem .jobTitle",
+        "company": ".employerName, .jobInfoItem .employerName",
+        "location": ".jobLocation, .jobInfoItem .loc",
+        "salary": ".salaryText, .jobInfoItem .salary",
+        "description": ".jobDesc, .jobDescriptionContent",
+        "link": ".jobTitle"
+      },
+      "rateLimit": 4000,
+      "maxResults": 30
+    },
+    {
+      "name": "times-jobs-india",
+      "enabled": true,
+      "baseUrl": "https://www.timesjobs.com",
+      "searchPath": "/candidate/job-search.html",
+      "searchParams": {
+        "searchType": "personalizedSearch",
+        "from": "submit",
+        "txtKeywords": "software engineer",
+        "txtLocation": "india"
+      },
+      "scrapingMethod": "scraping",
+      "selectors": {
+        "jobContainer": ".new-joblist, .clearfix.job-bx",
+        "title": ".joblist-comp-name, h2 a",
+        "company": ".joblist-comp-name, .joblist-comp-dtl",
+        "location": ".job-location, .location",
+        "salary": ".salary, .joblist-salary",
+        "description": ".list-job-dtl, .job-description",
+        "link": "h2 a, .joblist-comp-name a"
+      },
+      "rateLimit": 3500,
+      "maxResults": 25
+    },
+    {
+      "name": "monster-india",
+      "enabled": true,
+      "baseUrl": "https://www.monsterindia.com",
+      "searchPath": "/search/software-engineer-jobs",
+      "searchParams": {
+        "query": "software engineer developer",
+        "city": "bangalore mumbai delhi"
+      },
+      "scrapingMethod": "scraping",
+      "selectors": {
+        "jobContainer": ".card-body, .joblist-content",
+        "title": ".medium, .job-tittle a",
+        "company": ".company-name, .comp-name",
+        "location": ".loc, .location",
+        "salary": ".sal, .salary-info",
+        "description": ".job-description, .desc",
+        "link": ".medium, .job-tittle a"
+      },
+      "rateLimit": 3000,
+      "maxResults": 25
+    },
+    {
+      "name": "internshala-jobs",
+      "enabled": true,
+      "baseUrl": "https://internshala.com",
+      "searchPath": "/jobs/software-engineer-jobs",
+      "searchParams": {
+        "type": "job"
+      },
+      "scrapingMethod": "scraping",
+      "selectors": {
+        "jobContainer": ".individual_internship, .job-container",
+        "title": ".job-internship-name, .profile",
+        "company": ".company-name, .company",
+        "location": ".location-names, .location_link",
+        "salary": ".stipend, .salary",
+        "description": ".internship_other_details_container",
+        "link": ".view_detail_button, .job-internship-name"
+      },
+      "rateLimit": 2000,
+      "maxResults": 20
+    },
+    {
+      "name": "freshersworld-india",
+      "enabled": true,
+      "baseUrl": "https://www.freshersworld.com",
+      "searchPath": "/jobs/jobsearch/software-engineer-jobs-in-india",
+      "searchParams": {},
+      "scrapingMethod": "scraping",
+      "selectors": {
+        "jobContainer": ".job-container, .company-job-detail",
+        "title": ".latest-jobs-title a, .job-title",
+        "company": ".company-name, .comp-detail-overview",
+        "location": ".job-location, .location",
+        "salary": ".salary-offered, .salary",
+        "description": ".job-description",
+        "link": ".latest-jobs-title a"
+      },
+      "rateLimit": 2500,
+      "maxResults": 20
+    }
+  ],
+  "globalSettings": {
+    "defaultLocation": "India",
+    "maxResultsPerBoard": 50,
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "timeout": 45000,
+    "retryAttempts": 3,
+    "delay": {
+      "min": 2000,
+      "max": 5000
+    },
+    "testMode": false,
+    "enableLogging": true,
+    "exportFormats": ["csv", "json"],
+    "exportPath": "exports",
+    "proxyConfig": {
+      "enabled": false,
+      "proxyList": [
+        "http://proxy1.example.com:8080",
+        "http://proxy2.example.com:8080"
+      ],
+      "rotateEvery": 3,
+      "timeout": 45
+    },
+    "apiKeys": {
+      "usajobs": "YOUR_USAJOBS_API_KEY",
+      "github": "YOUR_GITHUB_TOKEN"
+    }
+  }
+}

@@ -1,0 +1,274 @@
+{
+  "jobBoards": [
+    {
+      "name": "times-jobs-india",
+      "enabled": true,
+      "baseUrl": "https://www.timesjobs.com",
+      "searchPath": "/candidate/job-search.html",
+      "searchParams": {
+        "searchType": "personalizedSearch",
+        "from": "submit",
+        "txtKeywords": "software engineer developer programmer",
+        "txtLocation": "india"
+      },
+      "scrapingMethod": "scraping",
+      "selectors": {
+        "jobContainer": ".new-joblist, .clearfix.job-bx",
+        "title": ".joblist-comp-name, h2 a",
+        "company": ".joblist-comp-name, .joblist-comp-dtl",
+        "location": ".job-location, .location",
+        "salary": ".salary, .joblist-salary",
+        "description": ".list-job-dtl, .job-description",
+        "link": "h2 a, .joblist-comp-name a"
+      },
+      "rateLimit": 3000,
+      "maxResults": 75
+    },
+    {
+      "name": "times-jobs-tech-specific",
+      "enabled": true,
+      "baseUrl": "https://www.timesjobs.com",
+      "searchPath": "/candidate/job-search.html",
+      "searchParams": {
+        "searchType": "personalizedSearch",
+        "from": "submit",
+        "txtKeywords": "java python javascript react node.js golang",
+        "txtLocation": "bangalore mumbai delhi hyderabad pune chennai"
+      },
+      "scrapingMethod": "scraping",
+      "selectors": {
+        "jobContainer": ".new-joblist, .clearfix.job-bx",
+        "title": ".joblist-comp-name, h2 a",
+        "company": ".joblist-comp-name, .joblist-comp-dtl",
+        "location": ".job-location, .location",
+        "salary": ".salary, .joblist-salary",
+        "description": ".list-job-dtl, .job-description",
+        "link": "h2 a, .joblist-comp-name a"
+      },
+      "rateLimit": 3500,
+      "maxResults": 50
+    },
+    {
+      "name": "naukri-software-jobs",
+      "enabled": true,
+      "baseUrl": "https://www.naukri.com",
+      "searchPath": "/software-engineer-jobs",
+      "searchParams": {
+        "k": "software engineer developer programmer",
+        "l": "bangalore mumbai delhi hyderabad pune chennai"
+      },
+      "scrapingMethod": "scraping",
+      "selectors": {
+        "jobContainer": ".jobTuple, .srp-jobtuple-wrapper, .sjw",
+        "title": ".title, .jobTuple-title a, .jobTitle",
+        "company": ".subTitle, .companyInfo, .company",
+        "location": ".locationsContainer, .location, .jobTuple-location",
+        "salary": ".salary, .jobTuple-salary, .salaryDetail",
+        "description": ".job-description, .jobTuple-description",
+        "link": ".title a, .jobTuple-title a",
+        "titleFallback": [".jobTitle", ".title", "h3 a"],
+        "companyFallback": [".company", ".subTitle", ".companyInfo"]
+      },
+      "rateLimit": 4000,
+      "maxResults": 50
+    },
+    {
+      "name": "hn-whoishiring-rss",
+      "enabled": true,
+      "scrapingMethod": "rss",
+      "rssConfig": {
+        "name": "hn-whoishiring-rss",
+        "feedUrl": "https://hnrss.org/jobs",
+        "feedType": "rss",
+        "maxResults": 30,
+        "keywords": ["software", "engineer", "developer", "programming", "india", "remote", "full-stack", "backend", "frontend"],
+        "excludeWords": ["intern", "unpaid"]
+      },
+      "rateLimit": 1000,
+      "maxResults": 30
+    },
+    {
+      "name": "remoteok-hybrid-india",
+      "enabled": true,
+      "baseUrl": "https://remoteok.io",
+      "searchPath": "/",
+      "searchParams": {},
+      "scrapingMethod": "scraping",
+      "selectors": {
+        "jobContainer": "tr.job, .job",
+        "title": "td.company h2, .position",
+        "company": "td.company h3, .company_name",
+        "location": "td.location, .location",
+        "salary": "td .salary, .salary",
+        "description": "td.company .company_name",
+        "link": "td.company a, .job a",
+        "titleFallback": [".position", ".job-title", "h2"],
+        "companyFallback": [".company", ".employer"]
+      },
+      "rateLimit": 3000,
+      "maxResults": 25
+    },
+    {
+      "name": "indeed-india-tech",
+      "enabled": true,
+      "baseUrl": "https://in.indeed.com",
+      "searchPath": "/jobs",
+      "searchParams": {
+        "q": "software engineer java python javascript",
+        "l": "India"
+      },
+      "scrapingMethod": "scraping",
+      "selectors": {
+        "jobContainer": ".jobsearch-SerpJobCard, .slider_container, .job_seen_beacon",
+        "title": ".jobTitle a, h2 a span[title], .jobTitle-color-purple",
+        "company": ".companyName, .companyInfo .companyName",
+        "location": ".companyLocation, .locationsContainer",
+        "salary": ".salary-snippet, .salary",
+        "description": ".summary, .job-snippet",
+        "link": ".jobTitle a, h2 a"
+      },
+      "rateLimit": 4000,
+      "maxResults": 40
+    },
+    {
+      "name": "github-jobs-rss",
+      "enabled": true,
+      "scrapingMethod": "rss",
+      "rssConfig": {
+        "name": "github-jobs-rss",
+        "feedUrl": "https://github.com/blog/category/jobs.atom",
+        "feedType": "atom",
+        "maxResults": 15,
+        "keywords": ["engineer", "developer", "software", "programming"],
+        "excludeWords": ["intern"]
+      },
+      "rateLimit": 1000,
+      "maxResults": 15
+    },
+    {
+      "name": "stackoverflow-careers-rss",
+      "enabled": true,
+      "scrapingMethod": "rss",
+      "rssConfig": {
+        "name": "stackoverflow-careers-rss",
+        "feedUrl": "https://careers.stackoverflow.com/jobs/feed",
+        "feedType": "rss",
+        "maxResults": 20,
+        "keywords": ["software", "engineer", "developer", "programming", "java", "python", "javascript"],
+        "excludeWords": ["intern", "student"]
+      },
+      "rateLimit": 1500,
+      "maxResults": 20
+    },
+    {
+      "name": "dice-tech-jobs",
+      "enabled": true,
+      "baseUrl": "https://www.dice.com",
+      "searchPath": "/jobs",
+      "searchParams": {
+        "q": "software engineer",
+        "location": "Remote"
+      },
+      "scrapingMethod": "scraping",
+      "selectors": {
+        "jobContainer": "[data-testid='job-card'], .job-card",
+        "title": "[data-testid='job-title'], .job-title",
+        "company": "[data-testid='company-name'], .company",
+        "location": "[data-testid='job-location'], .location",
+        "salary": "[data-testid='job-salary'], .salary",
+        "description": "[data-testid='job-description']",
+        "link": "[data-testid='job-title'] a"
+      },
+      "rateLimit": 3000,
+      "maxResults": 25
+    },
+    {
+      "name": "weworkremotely-programming",
+      "enabled": true,
+      "baseUrl": "https://weworkremotely.com",
+      "searchPath": "/categories/remote-programming-jobs",
+      "searchParams": {},
+      "scrapingMethod": "scraping",
+      "selectors": {
+        "jobContainer": "li.feature, .job",
+        "title": ".title, .job-title",
+        "company": ".company, .employer",
+        "location": ".region, .location",
+        "salary": ".salary",
+        "description": ".listing-container",
+        "link": ".title a, .job-title a"
+      },
+      "rateLimit": 4000,
+      "maxResults": 25
+    },
+    {
+      "name": "angel-co-startups",
+      "enabled": true,
+      "baseUrl": "https://angel.co",
+      "searchPath": "/jobs",
+      "searchParams": {
+        "role": "Software Engineer",
+        "location": "Remote"
+      },
+      "scrapingMethod": "scraping",
+      "selectors": {
+        "jobContainer": ".startup-list-item, .job-listing",
+        "title": ".startup-link, .job-title",
+        "company": ".company-name, .startup-name",
+        "location": ".location, .startup-location",
+        "salary": ".salary-range",
+        "description": ".startup-pitch, .job-description",
+        "link": ".startup-link"
+      },
+      "rateLimit": 3500,
+      "maxResults": 20
+    },
+    {
+      "name": "freelancer-programming",
+      "enabled": true,
+      "baseUrl": "https://www.freelancer.com",
+      "searchPath": "/jobs/programming",
+      "searchParams": {},
+      "scrapingMethod": "scraping",
+      "selectors": {
+        "jobContainer": ".JobSearchCard-item, .project-item",
+        "title": ".JobSearchCard-primary-heading a, .project-title",
+        "company": ".JobSearchCard-secondary-heading, .employer",
+        "location": ".JobSearchCard-location, .location",
+        "salary": ".JobSearchCard-primary-price, .budget",
+        "description": ".JobSearchCard-snippet",
+        "link": ".JobSearchCard-primary-heading a"
+      },
+      "rateLimit": 3000,
+      "maxResults": 20
+    }
+  ],
+  "globalSettings": {
+    "defaultLocation": "India",
+    "maxResultsPerBoard": 75,
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "timeout": 60000,
+    "retryAttempts": 3,
+    "delay": {
+      "min": 2000,
+      "max": 4000
+    },
+    "testMode": false,
+    "enableLogging": true,
+    "exportFormats": ["csv", "json"],
+    "exportPath": "exports",
+    "proxyConfig": {
+      "enabled": false,
+      "proxyList": [
+        "http://proxy1.example.com:8080",
+        "http://proxy2.example.com:8080"
+      ],
+      "rotateEvery": 3,
+      "timeout": 60
+    },
+    "apiKeys": {
+      "usajobs": "YOUR_USAJOBS_API_KEY",
+      "github": "YOUR_GITHUB_TOKEN"
+    }
+  }
+}

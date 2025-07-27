@@ -1,0 +1,76 @@
+{
+  "jobBoards": [
+    {
+      "name": "indeed",
+      "enabled": true,
+      "baseUrl": "https://www.indeed.com",
+      "searchPath": "/jobs",
+      "searchParams": {
+        "q": "{keywords}",
+        "l": "{location}"
+      },
+      "selectors": {
+        "jobContainer": ".job_seen_beacon",
+        "title": "h2 a span",
+        "company": ".companyName",
+        "location": ".companyLocation",
+        "salary": ".salary-snippet",
+        "description": ".job-snippet",
+        "link": "h2 a"
+      },
+      "rateLimit": 2000
+    },
+    {
+      "name": "linkedin",
+      "enabled": true,
+      "baseUrl": "https://www.linkedin.com",
+      "searchPath": "/jobs/search",
+      "searchParams": {
+        "keywords": "{keywords}",
+        "location": "{location}"
+      },
+      "selectors": {
+        "jobContainer": ".job-search-card",
+        "title": ".base-search-card__title",
+        "company": ".base-search-card__subtitle",
+        "location": ".job-search-card__location",
+        "salary": ".job-search-card__salary",
+        "description": ".job-search-card__summary",
+        "link": ".base-card__full-link"
+      },
+      "rateLimit": 3000
+    },
+    {
+      "name": "glassdoor",
+      "enabled": false,
+      "baseUrl": "https://www.glassdoor.com",
+      "searchPath": "/Job/jobs.htm",
+      "searchParams": {
+        "sc.keyword": "{keywords}",
+        "locT": "C",
+        "locId": "{location}"
+      },
+      "selectors": {
+        "jobContainer": ".react-job-listing",
+        "title": ".jobTitle",
+        "company": ".jobInfoItem .jobEmpolyerName",
+        "location": ".jobInfoItem .jobLocation",
+        "salary": ".jobSalary",
+        "description": ".jobDescription",
+        "link": ".jobTitle a"
+      },
+      "rateLimit": 4000
+    }
+  ],
+  "globalSettings": {
+    "defaultLocation": "Remote",
+    "maxResultsPerBoard": 50,
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+    "timeout": 30000,
+    "retryAttempts": 3,
+    "delay": {
+      "min": 1000,
+      "max": 3000
+    }
+  }
+}
