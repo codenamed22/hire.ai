@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(rm:*)",
+      "Bash(go mod init:*)",
+      "Bash(go mod:*)",
+      "Bash(make:*)",
+      "Bash(./bin/job-scraper:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:docs.scrapy.org)",
+      "WebFetch(domain:stackoverflow.com)",
+      "WebFetch(domain:remote.co)",
+      "WebFetch(domain:authenticjobs.com)",
+      "WebFetch(domain:news.ycombinator.com)",
+      "WebFetch(domain:github.careers)",
+      "WebFetch(domain:about.gitlab.com)",
+      "WebFetch(domain:remoteok.io)",
+      "WebFetch(domain:remoteok.com)",
+      "WebFetch(domain:www.naukri.com)",
+      "WebFetch(domain:weworkremotely.com)",
+      "WebFetch(domain:jobs.lever.co)",
+      "WebFetch(domain:www.ycombinator.com)",
+      "Bash(true)",
+      "Bash(go run:*)",
+      "Bash(mv:*)",
+      "Bash(gofmt:*)",
+      "Bash(go build:*)"
+    ],
+    "deny": []
+  }
+}

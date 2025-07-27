@@ -1,0 +1,70 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+bin/
+tmp/
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Dependency directories (remove the comment below to include it)
+# vendor/
+
+# Go workspace file
+go.work
+
+# Environment variables
+.env
+
+# Data and logs
+data/
+logs/
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Export files (keep directory but ignore exports)
+exports/*.csv
+exports/*.json
+!exports/.gitkeep
+
+# Storage and database files
+storage/
+*.db
+*.sqlite
+
+# API Keys and sensitive config
+config/*-production.json
+config/*-staging.json
+**/secrets.json
+
+# Air hot reload
+build-errors.log
+
+# Temporary files
+temp/
+*.tmp
+
+# Coverage files
+coverage.out
+coverage.html
