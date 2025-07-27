@@ -108,6 +108,11 @@ sequenceDiagram
     Note over Orchestrator,OpenAI: Metrics collected for monitoring
 ```
 
+## 🏗️ Future Architectural plan
+
+<img width="1819" height="1632" alt="image" src="https://github.com/user-attachments/assets/f318d141-5e50-4bfd-bded-5fe3c8e4b34f" />
+
+
 ## 🏗️ Technical Architecture
 
 ### Current Project Structure
