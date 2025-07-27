@@ -288,11 +288,10 @@ go run cmd/scraper/main.go -config config/production.json -export csv
 
 ## 🤝 Contributing
 
-1. **Fork the repository**
-2. **Create feature branch**: `git checkout -b feature/amazing-feature`
-3. **Add comprehensive tests** for new functionality
-4. **Update documentation** including README and config examples
-5. **Submit pull request** with detailed description
+1. **Create feature branch**: `git checkout -b feature/amazing-feature`
+2. **Add comprehensive tests** for new functionality
+3. **Update documentation** including README and config examples
+4. **Submit pull request** with detailed description
 
 ### Development Guidelines
 - Follow Go best practices and formatting (`go fmt`)
@@ -311,5 +310,3 @@ MIT License - see LICENSE file for details.
 - **Performance**: See production results for expected extraction rates
 
 ---
-
-**Status**: ✅ Production Ready | **Jobs Extracted**: 70+ | **Target Achievement**: 140% | **Focus**: India Software Engineering Market
