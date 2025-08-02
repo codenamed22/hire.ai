@@ -80,6 +80,32 @@ run-agent-search:
 	fi
 	python agents/cli.py agent "$(KEYWORDS)" --location "$(or $(LOCATION),India,Remote)" --max-results 25
 
+# Database search commands
+run-database-search:
+	@if [ -z "$(KEYWORDS)" ]; then \
+		echo "Usage: make run-database-search KEYWORDS=\"your keywords\" [LOCATION=\"location\"]"; \
+		exit 1; \
+	fi
+	python3 agents/cli.py database "$(KEYWORDS)" --location "$(or $(LOCATION),India,Remote)" --max-results 25
+
+# Hybrid search commands  
+run-hybrid-search:
+	@if [ -z "$(KEYWORDS)" ]; then \
+		echo "Usage: make run-hybrid-search KEYWORDS=\"your keywords\" [LOCATION=\"location\"]"; \
+		exit 1; \
+	fi
+	python3 agents/cli.py hybrid "$(KEYWORDS)" --location "$(or $(LOCATION),India,Remote)" --max-results 50
+
+# Database operations
+db-setup:
+	python3 bin/migrate.py -action=up -verbose
+
+db-status:
+	python3 bin/migrate.py -action=status
+
+db-reset:
+	python3 bin/migrate.py -action=down && python3 bin/migrate.py -action=up -verbose
+
 # Setup development environment
 setup:
 	@echo "Setting up development environment..."
@@ -103,11 +129,18 @@ help:
 	@echo "  export-json  - Export existing data to JSON"
 	@echo ""
 	@echo "Agentic AI Commands:"
-	@echo "  setup-agents     - Setup Python agent environment"
-	@echo "  run-agents       - Run AI orchestrator with default search"
-	@echo "  ask-agents       - Interactive AI question mode"
-	@echo "  run-agent-search - Run specific agent search (requires KEYWORDS)"
-	@echo "  agents-help      - Show detailed agent CLI help"
+	@echo "  setup-agents         - Setup Python agent environment"
+	@echo "  run-agents           - Run AI orchestrator with default search"
+	@echo "  ask-agents           - Interactive AI question mode"
+	@echo "  run-agent-search     - Run specific agent search (requires KEYWORDS)"
+	@echo "  run-database-search  - Search jobs in database (requires KEYWORDS)"
+	@echo "  run-hybrid-search    - Hybrid database + scraping search (requires KEYWORDS)"
+	@echo "  agents-help          - Show detailed agent CLI help"
+	@echo ""
+	@echo "Database Commands:"
+	@echo "  db-setup             - Setup database schema and tables"
+	@echo "  db-status            - Show database status and statistics"
+	@echo "  db-reset             - Reset database (WARNING: destroys data)"
 	@echo ""
 	@echo "Development Commands:"
 	@echo "  dev          - Run in development mode with hot reload"
@@ -127,3 +160,5 @@ help:
 	@echo "  make run-agents                                   # AI orchestrator search"
 	@echo "  make ask-agents                                   # Ask AI questions"
 	@echo "  make run-agent-search KEYWORDS=\"react,frontend\"  # Specific AI search"
+	@echo "  make run-database-search KEYWORDS=\"python,django\" # Search database only"
+	@echo "  make run-hybrid-search KEYWORDS=\"java,spring\"    # Database + scraping"
