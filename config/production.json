@@ -243,6 +243,80 @@
       "maxResults": 20
     }
   ],
+  "apiProviders": [
+    {
+      "name": "usajobs",
+      "enabled": false,
+      "provider": "usajobs",
+      "base_url": "https://data.usajobs.gov/api/Search",
+      "api_key": "",
+      "rate_limit": {
+        "requests_per_minute": 10,
+        "requests_per_hour": 500,
+        "requests_per_day": 5000,
+        "cooldown_period": "6s"
+      },
+      "max_results": 50,
+      "timeout": "30s",
+      "retry_config": {
+        "max_attempts": 3,
+        "initial_wait": "1s",
+        "max_wait": "10s",
+        "multiplier": 2.0
+      },
+      "headers": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+      }
+    },
+    {
+      "name": "reed",
+      "enabled": true,
+      "provider": "reed",
+      "base_url": "https://www.reed.co.uk/api/1.0/search",
+      "api_key": "",
+      "rate_limit": {
+        "requests_per_minute": 20,
+        "requests_per_hour": 1000,
+        "requests_per_day": 10000,
+        "cooldown_period": "3s"
+      },
+      "max_results": 100,
+      "timeout": "30s",
+      "retry_config": {
+        "max_attempts": 3,
+        "initial_wait": "1s",
+        "max_wait": "10s",
+        "multiplier": 2.0
+      },
+      "headers": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+      }
+    },
+    {
+      "name": "jsearch",
+      "enabled": false,
+      "provider": "jsearch",
+      "base_url": "https://jsearch.p.rapidapi.com/search",
+      "api_key": "",
+      "rate_limit": {
+        "requests_per_minute": 30,
+        "requests_per_hour": 500,
+        "requests_per_day": 5000,
+        "cooldown_period": "2s"
+      },
+      "max_results": 50,
+      "timeout": "30s",
+      "retry_config": {
+        "max_attempts": 3,
+        "initial_wait": "1s",
+        "max_wait": "10s",
+        "multiplier": 2.0
+      },
+      "headers": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+      }
+    }
+  ],
   "globalSettings": {
     "defaultLocation": "India",
     "maxResultsPerBoard": 75,

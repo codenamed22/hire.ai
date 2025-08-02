@@ -86,6 +86,7 @@ type USAJob struct {
 	} `json:"MatchedObjectDescriptor"`
 }
 
+// NewAPIClient creates a new API client with the specified user agent and API keys
 func NewAPIClient(userAgent string, apiKeys map[string]string) *APIClient {
 	return &APIClient{
 		httpClient: &http.Client{

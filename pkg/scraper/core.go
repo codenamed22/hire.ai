@@ -71,8 +71,9 @@ type GlobalSettings struct {
 }
 
 type Config struct {
-	JobBoards      []JobBoard     `json:"jobBoards"`
-	GlobalSettings GlobalSettings `json:"globalSettings"`
+	JobBoards      []JobBoard      `json:"jobBoards"`
+	APIProviders   []api.APIConfig `json:"apiProviders"`
+	GlobalSettings GlobalSettings  `json:"globalSettings"`
 }
 
 // Import the Job type from models package
@@ -83,7 +84,7 @@ type ScraperCore struct {
 	logger       *logrus.Logger
 	client       *http.Client
 	proxyManager *proxy.ProxyManager
-	apiClient    *api.APIClient
+	apiManager   *api.APIManager
 	rssClient    *rss.RSSClient
 }
 
@@ -93,6 +94,7 @@ type ScrapeResult struct {
 	Source string
 }
 
+// NewScraperCore creates a new scraper core instance with the specified configuration
 func NewScraperCore(configPath string) (*ScraperCore, error) {
 	config, err := loadConfig(configPath)
 	if err != nil {
@@ -131,12 +133,32 @@ func NewScraperCore(configPath string) (*ScraperCore, error) {
 
 	rateLimiter := rate.NewLimiter(rate.Every(time.Millisecond*time.Duration(config.GlobalSettings.Delay.Min)), 1)
 
-	// Initialize API client
-	apiKeys := config.GlobalSettings.APIKeys
-	if apiKeys == nil {
-		apiKeys = make(map[string]string)
+	// Initialize API manager
+	apiManager := api.NewAPIManager(logger)
+
+	// Load API keys from environment variables if not set in config
+	for i := range config.APIProviders {
+		if config.APIProviders[i].APIKey == "" {
+			envKey := getAPIKeyEnvVar(config.APIProviders[i].Provider)
+			if envValue := os.Getenv(envKey); envValue != "" {
+				config.APIProviders[i].APIKey = envValue
+				logger.Infof("Loaded API key for %s from environment variable %s", config.APIProviders[i].Provider, envKey)
+			}
+		}
 	}
-	apiClient := api.NewAPIClient(config.GlobalSettings.UserAgent, apiKeys)
+
+	// Register API providers
+	if err := api.RegisterProviders(apiManager, config.APIProviders); err != nil {
+		logger.Warnf("Failed to register API providers: %v", err)
+	} else {
+		enabledCount := 0
+		for _, provider := range config.APIProviders {
+			if provider.Enabled && provider.APIKey != "" {
+				enabledCount++
+			}
+		}
+		logger.Infof("Registered %d API providers (%d enabled and configured)", len(config.APIProviders), enabledCount)
+	}
 
 	// Initialize RSS client
 	rssClient := rss.NewRSSClient(config.GlobalSettings.UserAgent)
@@ -147,13 +169,39 @@ func NewScraperCore(configPath string) (*ScraperCore, error) {
 		logger:       logger,
 		client:       client,
 		proxyManager: proxyManager,
-		apiClient:    apiClient,
+		apiManager:   apiManager,
 		rssClient:    rssClient,
 	}, nil
 }
 
 func (sc *ScraperCore) GetConfig() Config {
 	return sc.config
+}
+
+// GetAPIStats returns statistics for all API providers
+func (sc *ScraperCore) GetAPIStats() map[string]*api.APIStats {
+	return sc.apiManager.GetStats()
+}
+
+// ValidateAPICredentials validates all configured API providers
+func (sc *ScraperCore) ValidateAPICredentials() map[string]error {
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	return sc.apiManager.ValidateAllProviders(ctx)
+}
+
+// getAPIKeyEnvVar returns the environment variable name for the given provider
+func getAPIKeyEnvVar(provider string) string {
+	switch provider {
+	case "usajobs":
+		return "USAJOBS_API_KEY"
+	case "reed":
+		return "REED_API_KEY"
+	case "jsearch":
+		return "JSEARCH_API_KEY"
+	default:
+		return strings.ToUpper(provider) + "_API_KEY"
+	}
 }
 
 func loadConfig(configPath string) (Config, error) {
@@ -171,11 +219,69 @@ func loadConfig(configPath string) (Config, error) {
 }
 
 func (sc *ScraperCore) ScrapeAllBoards(keywords []string, location string) ([]models.Job, error) {
-	enabledBoards := sc.getEnabledBoards()
-	if len(enabledBoards) == 0 {
-		return nil, fmt.Errorf("no enabled job boards found")
+	var allJobs []models.Job
+	var errors []string
+
+	// First, try API providers
+	sc.logger.Info("Attempting to fetch jobs using API providers...")
+	apiJobs, apiErrors := sc.fetchFromAPIs(keywords, location)
+	if len(apiJobs) > 0 {
+		allJobs = append(allJobs, apiJobs...)
+		sc.logger.Infof("Fetched %d jobs from API providers", len(apiJobs))
+	}
+	if len(apiErrors) > 0 {
+		for _, err := range apiErrors {
+			errors = append(errors, fmt.Sprintf("API: %v", err))
+		}
 	}
 
+	// Then, fallback to scraping if needed or if APIs didn't provide enough results
+	enabledBoards := sc.getEnabledBoards()
+	if len(enabledBoards) > 0 {
+		sc.logger.Info("Falling back to web scraping...")
+		scraperJobs, scraperErrors := sc.scrapeBoards(enabledBoards, keywords, location)
+		allJobs = append(allJobs, scraperJobs...)
+		errors = append(errors, scraperErrors...)
+	}
+
+	if len(allJobs) == 0 && len(errors) > 0 {
+		return nil, fmt.Errorf("all sources failed: %s", strings.Join(errors, "; "))
+	}
+
+	return allJobs, nil
+}
+
+// fetchFromAPIs attempts to fetch jobs from all configured API providers
+func (sc *ScraperCore) fetchFromAPIs(keywords []string, location string) ([]models.Job, []error) {
+	// Build search query
+	query := api.SearchQuery{
+		Keywords: keywords,
+		Location: location,
+		Limit:    100, // Default limit per provider
+		Offset:   0,
+	}
+
+	// Search all configured providers
+	results, err := sc.apiManager.SearchAll(context.Background(), query)
+	if err != nil {
+		return nil, []error{err}
+	}
+
+	// Aggregate jobs from all providers
+	var allJobs []models.Job
+	var errors []error
+
+	for _, result := range results {
+		if result != nil {
+			allJobs = append(allJobs, result.Jobs...)
+			sc.logger.Infof("API provider %s returned %d jobs", result.Provider, len(result.Jobs))
+		}
+	}
+
+	return allJobs, errors
+}
+
+func (sc *ScraperCore) scrapeBoards(enabledBoards []JobBoard, keywords []string, location string) ([]models.Job, []string) {
 	resultChan := make(chan ScrapeResult, len(enabledBoards))
 	var wg sync.WaitGroup
 
@@ -220,11 +326,7 @@ func (sc *ScraperCore) ScrapeAllBoards(keywords []string, location string) ([]mo
 		}
 	}
 
-	if len(errors) > 0 && len(allJobs) == 0 {
-		return nil, fmt.Errorf("all boards failed: %s", strings.Join(errors, "; "))
-	}
-
-	return allJobs, nil
+	return allJobs, errors
 }
 
 func (sc *ScraperCore) scrapeBoard(board JobBoard, keywords []string, location string) ([]models.Job, error) {
@@ -238,10 +340,8 @@ func (sc *ScraperCore) scrapeBoard(board JobBoard, keywords []string, location s
 
 	switch method {
 	case "api":
-		if board.APIConfig != nil {
-			return sc.apiClient.FetchJobs(*board.APIConfig, keywords, location)
-		}
-		return nil, fmt.Errorf("API config not provided for %s", board.Name)
+		// Legacy API config - now handled by the new API provider system
+		return nil, fmt.Errorf("legacy API config no longer supported for %s, use apiProviders section instead", board.Name)
 
 	case "rss":
 		if board.RSSConfig != nil {

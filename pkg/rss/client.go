@@ -62,6 +62,7 @@ type RSSClient struct {
 	userAgent  string
 }
 
+// NewRSSClient creates a new RSS client with the specified user agent
 func NewRSSClient(userAgent string) *RSSClient {
 	return &RSSClient{
 		httpClient: &http.Client{

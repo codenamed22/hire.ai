@@ -25,6 +25,7 @@ type ProxyManager struct {
 	userAgents   []string
 }
 
+// NewProxyManager creates a new proxy manager with the specified configuration
 func NewProxyManager(config ProxyConfig) (*ProxyManager, error) {
 	pm := &ProxyManager{
 		config:     config,
