@@ -3,7 +3,6 @@ module hire.ai
 go 1.21
 
 require (
-	github.com/PuerkitoBio/goquery v1.8.1
 	github.com/chromedp/chromedp v0.9.3
 	github.com/gocolly/colly/v2 v2.1.0
 	github.com/joho/godotenv v1.5.1
@@ -12,6 +11,7 @@ require (
 )
 
 require (
+	github.com/PuerkitoBio/goquery v1.8.1 // indirect
 	github.com/andybalholm/cascadia v1.3.1 // indirect
 	github.com/antchfx/htmlquery v1.2.3 // indirect
 	github.com/antchfx/xmlquery v1.2.4 // indirect

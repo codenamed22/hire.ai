@@ -16,6 +16,7 @@ type CSVExporter struct {
 	outputDir string
 }
 
+// NewCSVExporter creates a new CSV exporter with the specified output directory
 func NewCSVExporter(outputDir string) *CSVExporter {
 	return &CSVExporter{
 		outputDir: outputDir,

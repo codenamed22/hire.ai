@@ -11,6 +11,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 
+	"hire.ai/pkg/api"
 	"hire.ai/pkg/export"
 	"hire.ai/pkg/keywords"
 	"hire.ai/pkg/models"
@@ -24,13 +25,15 @@ func main() {
 
 	// Command line flags
 	var (
-		keywordsFlag   = flag.String("keywords", "", "Job search keywords (comma-separated)")
-		locationFlag   = flag.String("location", "", "Job location")
-		configFlag     = flag.String("config", "config/job-boards.json", "Path to job boards configuration")
-		dataFlag       = flag.String("data", "data", "Data directory for storage")
-		verboseFlag    = flag.Bool("verbose", false, "Verbose logging")
-		exportFlag     = flag.String("export", "", "Export format (csv, json) - if specified, exports and exits")
-		exportFileFlag = flag.String("export-file", "", "Custom export filename")
+		keywordsFlag    = flag.String("keywords", "", "Job search keywords (comma-separated)")
+		locationFlag    = flag.String("location", "", "Job location")
+		configFlag      = flag.String("config", "config/job-boards.json", "Path to job boards configuration")
+		dataFlag        = flag.String("data", "data", "Data directory for storage")
+		verboseFlag     = flag.Bool("verbose", false, "Verbose logging")
+		exportFlag      = flag.String("export", "", "Export format (csv, json) - if specified, exports and exits")
+		exportFileFlag  = flag.String("export-file", "", "Custom export filename")
+		apiStatsFlag    = flag.Bool("api-stats", false, "Show API provider statistics and exit")
+		validateAPIFlag = flag.Bool("validate-api", false, "Validate API credentials and exit")
 	)
 	flag.Parse()
 
@@ -52,6 +55,18 @@ func main() {
 		if err := app.ExportExistingData(*exportFlag, *exportFileFlag); err != nil {
 			logger.Fatalf("Export failed: %v", err)
 		}
+		return
+	}
+
+	// Check if we should show API stats
+	if *apiStatsFlag {
+		app.ShowAPIStats()
+		return
+	}
+
+	// Check if we should validate API credentials
+	if *validateAPIFlag {
+		app.ValidateAndShowAPICredentials()
 		return
 	}
 
@@ -112,6 +127,7 @@ type Application struct {
 	config           *scraper.Config
 }
 
+// NewApplication creates a new application instance with the specified configuration
 func NewApplication(configPath, dataDir string, logger *logrus.Logger) (*Application, error) {
 	// Initialize scraper
 	scraperCore, err := scraper.NewScraperCore(configPath)
@@ -366,6 +382,84 @@ func (app *Application) exportToJSON(jobs []models.Job, filename string) error {
 
 	app.logger.Infof("Exported %d jobs to JSON: %s", len(jobs), filePath)
 	return nil
+}
+
+// GetAPIStats returns statistics for all API providers
+func (app *Application) GetAPIStats() map[string]*api.APIStats {
+	return app.scraper.GetAPIStats()
+}
+
+// ValidateAPICredentials validates all configured API providers
+func (app *Application) ValidateAPICredentials() map[string]error {
+	return app.scraper.ValidateAPICredentials()
+}
+
+// ShowAPIStats displays API provider statistics
+func (app *Application) ShowAPIStats() {
+	stats := app.GetAPIStats()
+
+	fmt.Println("\n" + strings.Repeat("=", 60))
+	fmt.Println("API PROVIDER STATISTICS")
+	fmt.Println(strings.Repeat("=", 60))
+
+	if len(stats) == 0 {
+		fmt.Println("No API providers configured or used.")
+		return
+	}
+
+	for provider, stat := range stats {
+		fmt.Printf("\nProvider: %s\n", strings.ToUpper(provider))
+		fmt.Printf("  Total Requests: %d\n", stat.TotalRequests)
+		fmt.Printf("  Successful: %d\n", stat.SuccessRequests)
+		fmt.Printf("  Failed: %d\n", stat.FailedRequests)
+		if stat.TotalRequests > 0 {
+			fmt.Printf("  Success Rate: %.1f%%\n", float64(stat.SuccessRequests)/float64(stat.TotalRequests)*100)
+		} else {
+			fmt.Printf("  Success Rate: N/A\n")
+		}
+		fmt.Printf("  Total Jobs Found: %d\n", stat.TotalJobs)
+		fmt.Printf("  Average Latency: %v\n", stat.AverageLatency)
+		if !stat.LastUsed.IsZero() {
+			fmt.Printf("  Last Used: %s\n", stat.LastUsed.Format("2006-01-02 15:04:05"))
+		}
+	}
+}
+
+// ValidateAndShowAPICredentials validates and displays API credential status
+func (app *Application) ValidateAndShowAPICredentials() {
+	fmt.Println("\n" + strings.Repeat("=", 60))
+	fmt.Println("API CREDENTIALS VALIDATION")
+	fmt.Println(strings.Repeat("=", 60))
+
+	results := app.ValidateAPICredentials()
+
+	if len(results) == 0 {
+		fmt.Println("No API providers configured.")
+		return
+	}
+
+	var validCount, invalidCount int
+
+	for provider, err := range results {
+		fmt.Printf("\nProvider: %s\n", strings.ToUpper(provider))
+		if err == nil {
+			fmt.Printf("  Status: ✅ VALID\n")
+			validCount++
+		} else {
+			fmt.Printf("  Status: ❌ INVALID\n")
+			fmt.Printf("  Error: %v\n", err)
+			invalidCount++
+		}
+	}
+
+	fmt.Printf("\nSummary: %d valid, %d invalid providers\n", validCount, invalidCount)
+
+	if invalidCount > 0 {
+		fmt.Println("\nTo configure API keys, update your config file or set environment variables:")
+		fmt.Println("  - For USAJobs: Set 'api_key' in config or USAJOBS_API_KEY env var")
+		fmt.Println("  - For Reed: Set 'api_key' in config or REED_API_KEY env var")
+		fmt.Println("  - For JSearch: Set 'api_key' in config or JSEARCH_API_KEY env var")
+	}
 }
 
 func (app *Application) Close() {

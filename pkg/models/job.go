@@ -54,6 +54,7 @@ type JobStats struct {
 	Keywords       map[string]int `json:"keywords"`
 }
 
+// NewJob creates a new job instance with the provided details
 func NewJob(title, company, location, salary, description, link, source string) *Job {
 	job := &Job{
 		Title:       strings.TrimSpace(title),

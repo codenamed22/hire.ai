@@ -18,6 +18,7 @@ type SearchQuery struct {
 	Exclusions []string `json:"exclusions"`
 }
 
+// NewKeywordProcessor creates a new keyword processor instance
 func NewKeywordProcessor() *KeywordProcessor {
 	return &KeywordProcessor{
 		synonyms:   getDefaultSynonyms(),
