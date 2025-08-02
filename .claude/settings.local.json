@@ -53,7 +53,8 @@
       "WebFetch(domain:rapidapi.com)",
       "WebFetch(domain:adzuna.com)",
       "WebFetch(domain:thejobapi.com)",
-      "Bash(sed:*)"
+      "Bash(sed:*)",
+      "Bash(chmod:*)"
     ],
     "deny": []
   }

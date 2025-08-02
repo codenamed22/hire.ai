@@ -21,6 +21,9 @@ PyYAML>=6.0.0
 # Subprocess and system integration
 psutil>=5.9.0
 
+# Database connectivity
+psycopg2-binary>=2.9.0
+
 # Logging and monitoring
 loguru>=0.7.0
 

@@ -18,6 +18,8 @@ sys.path.insert(0, str(project_root))
 
 from agents.orchestrator.main import HireAIOrchestrator, JobSearchRequest
 from agents.job_search.agent import JobSearchAgent, JobSearchCriteria
+from agents.tools.database_search_tool import DatabaseSearchTool
+from agents.tools.hybrid_search_tool import HybridSearchTool
 from loguru import logger
 
 
@@ -144,6 +146,96 @@ def run_agent_search(args: argparse.Namespace) -> None:
             
     except Exception as e:
         logger.error(f"Agent search failed: {e}")
+        print(f"❌ Error: {e}")
+
+
+def run_database_search(args: argparse.Namespace) -> None:
+    """
+    Run a job search using the database search tool.
+    
+    Args:
+        args: Command line arguments
+    """
+    print("🗄️ Searching Database...")
+    
+    try:
+        # Create database search tool
+        db_tool = DatabaseSearchTool()
+        
+        # Parse keywords
+        keywords = [k.strip() for k in args.keywords.split(",")]
+        
+        print(f"🔍 Keywords: {', '.join(keywords)}")
+        print(f"📍 Location: {args.location}")
+        print(f"📊 Max Results: {args.max_results}")
+        print("\n" + "="*60)
+        
+        # Execute search
+        results = db_tool.intelligent_search(
+            keywords=keywords,
+            location=args.location,
+            max_results=args.max_results
+        )
+        
+        # Display results
+        display_database_results(results)
+        
+        # Save results if requested
+        if args.output:
+            save_results(results, args.output)
+            print(f"\n💾 Results saved to: {args.output}")
+            
+    except Exception as e:
+        logger.error(f"Database search failed: {e}")
+        print(f"❌ Error: {e}")
+
+
+def run_hybrid_search(args: argparse.Namespace) -> None:
+    """
+    Run a job search using the hybrid search tool.
+    
+    Args:
+        args: Command line arguments
+    """
+    print("🔄 Initializing Hybrid Search (Database + Live Scraping)...")
+    
+    try:
+        # Create hybrid search tool
+        hybrid_tool = HybridSearchTool()
+        
+        # Parse keywords
+        keywords = [k.strip() for k in args.keywords.split(",")]
+        
+        print(f"🔍 Keywords: {', '.join(keywords)}")
+        print(f"📍 Location: {args.location}")
+        print(f"📊 Max Results: {args.max_results}")
+        print(f"🕷️ Include Scraping: {args.include_scraping}")
+        print("\n" + "="*60)
+        
+        # Create request
+        from agents.tools.hybrid_search_tool import HybridSearchRequest
+        request = HybridSearchRequest(
+            keywords=keywords,
+            location=args.location,
+            max_results=args.max_results,
+            include_scraping=args.include_scraping,
+            scrape_threshold=args.scrape_threshold,
+            max_scrape_results=args.max_scrape_results
+        )
+        
+        # Execute search
+        results = hybrid_tool.search_jobs_intelligently(request)
+        
+        # Display results
+        display_hybrid_results(results)
+        
+        # Save results if requested
+        if args.output:
+            save_results(results, args.output)
+            print(f"\n💾 Results saved to: {args.output}")
+            
+    except Exception as e:
+        logger.error(f"Hybrid search failed: {e}")
         print(f"❌ Error: {e}")
 
 
@@ -317,6 +409,138 @@ def display_agent_results(results: Dict[str, Any]) -> None:
             print()
 
 
+def display_database_results(results: Dict[str, Any]) -> None:
+    """
+    Display results from database search.
+    
+    Args:
+        results: Search results dictionary
+    """
+    if not results.get("success", False):
+        print(f"❌ Database search failed: {results.get('error', 'Unknown error')}")
+        return
+    
+    jobs = results.get("jobs", [])
+    insights = results.get("insights", {})
+    
+    print(f"✅ Database search completed!")
+    print(f"📊 Total found: {results.get('total_found', 0)}")
+    print(f"🔍 Search terms: {', '.join(results.get('search_terms', []))}")
+    
+    # Display top jobs
+    if jobs:
+        print("\n🎯 TOP JOB OPPORTUNITIES FROM DATABASE:")
+        for i, job in enumerate(jobs[:15], 1):
+            title = job.get("title", "N/A")
+            company = job.get("company", "N/A")
+            location = job.get("location", "N/A")
+            relevance = job.get("relevance_score", 0)
+            source = job.get("source", "N/A")
+            
+            print(f"{i:2d}. {title}")
+            print(f"    🏢 {company}")
+            print(f"    📍 {location}")
+            print(f"    📡 Source: {source}")
+            print(f"    ⭐ Relevance: {relevance:.2f}")
+            print()
+    
+    # Display insights
+    if insights:
+        print("🧠 DATABASE INSIGHTS:")
+        
+        if insights.get("top_companies"):
+            print("🏢 Top Companies:")
+            for company, count in insights["top_companies"]:
+                print(f"   • {company}: {count} jobs")
+            print()
+        
+        if insights.get("top_locations"):
+            print("📍 Top Locations:")
+            for location, count in insights["top_locations"]:
+                print(f"   • {location}: {count} jobs")
+            print()
+        
+        if insights.get("sources"):
+            print("📡 Job Sources:")
+            for source, count in insights["sources"].items():
+                print(f"   • {source}: {count} jobs")
+            print()
+
+
+def display_hybrid_results(results: Dict[str, Any]) -> None:
+    """
+    Display results from hybrid search.
+    
+    Args:
+        results: Search results dictionary
+    """
+    if not results.get("success", False):
+        print(f"❌ Hybrid search failed: {results.get('error', 'Unknown error')}")
+        return
+    
+    jobs = results.get("jobs", [])
+    insights = results.get("insights", {})
+    performance = results.get("performance", {})
+    
+    print(f"✅ Hybrid search completed!")
+    print(f"📊 Total found: {results.get('total_found', 0)}")
+    print(f"🗄️ Database results: {results.get('database_count', 0)}")
+    print(f"🕷️ Scraping results: {results.get('scraping_count', 0)}")
+    print(f"⚡ Duration: {performance.get('duration_seconds', 0):.2f}s")
+    
+    if results.get("scraping_triggered"):
+        print("✅ Live scraping was triggered")
+    else:
+        print("ℹ️ Live scraping was not needed")
+    
+    if results.get("scraping_error"):
+        print(f"⚠️ Scraping warning: {results.get('scraping_error')}")
+    
+    # Display top jobs
+    if jobs:
+        print("\n🎯 TOP JOB OPPORTUNITIES (HYBRID RESULTS):")
+        for i, job in enumerate(jobs[:15], 1):
+            title = job.get("title", "N/A")
+            company = job.get("company", "N/A")
+            location = job.get("location", "N/A")
+            relevance = job.get("relevance_score", 0)
+            source_type = job.get("source_type", "unknown")
+            source = job.get("source", "N/A")
+            
+            source_icon = "🗄️" if source_type == "database" else "🕷️"
+            
+            print(f"{i:2d}. {title}")
+            print(f"    🏢 {company}")
+            print(f"    📍 {location}")
+            print(f"    {source_icon} {source_type.title()}: {source}")
+            print(f"    ⭐ Relevance: {relevance:.2f}")
+            print()
+    
+    # Display insights
+    if insights:
+        print("🧠 HYBRID SEARCH INSIGHTS:")
+        
+        print(f"🔍 Strategy: {insights.get('search_strategy', 'N/A')}")
+        
+        if insights.get("source_distribution"):
+            print("📊 Source Distribution:")
+            for source_type, count in insights["source_distribution"].items():
+                icon = "🗄️" if source_type == "database" else "🕷️"
+                print(f"   {icon} {source_type.replace('_', ' ').title()}: {count} jobs")
+            print()
+        
+        if insights.get("top_companies"):
+            print("🏢 Top Companies:")
+            for company, count in insights["top_companies"]:
+                print(f"   • {company}: {count} jobs")
+            print()
+        
+        if insights.get("recommendation"):
+            print(f"💡 Strategy Recommendation:")
+            print(f"   {insights['recommendation']}")
+            print()
+
+
 def save_results(results: Dict[str, Any], output_path: str) -> None:
     """
     Save results to a JSON file.
@@ -352,6 +576,12 @@ Examples:
 
   # Run direct agent search  
   python agents/cli.py agent "java spring boot" --location "Bangalore,Mumbai" --remote
+
+  # Search database only
+  python agents/cli.py database "python, django" --location "Bangalore" --max-results 25
+
+  # Hybrid search (database + scraping)
+  python agents/cli.py hybrid "react, frontend" --location "Remote" --max-results 50
 
   # Interactive question mode
   python agents/cli.py question
@@ -401,6 +631,37 @@ Examples:
     question_parser = subparsers.add_parser("question", 
                                            help="Interactive AutoGen question mode")
     
+    # Database command
+    db_parser = subparsers.add_parser("database", 
+                                     help="Search jobs in database")
+    db_parser.add_argument("keywords", 
+                          help="Job search keywords (comma-separated)")
+    db_parser.add_argument("--location", "-l", default="India,Remote", 
+                          help="Search locations")
+    db_parser.add_argument("--max-results", "-m", type=int, default=25, 
+                          help="Maximum results")
+    db_parser.add_argument("--output", "-o", 
+                          help="Output file for results")
+    
+    # Hybrid command
+    hybrid_parser = subparsers.add_parser("hybrid", 
+                                         help="Hybrid search (database + scraping)")
+    hybrid_parser.add_argument("keywords", 
+                              help="Job search keywords (comma-separated)")
+    hybrid_parser.add_argument("--location", "-l", default="India,Remote", 
+                              help="Search locations")
+    hybrid_parser.add_argument("--max-results", "-m", type=int, default=50, 
+                              help="Maximum results")
+    hybrid_parser.add_argument("--no-scraping", dest="include_scraping", 
+                              action="store_false", default=True,
+                              help="Disable live scraping")
+    hybrid_parser.add_argument("--scrape-threshold", type=int, default=10,
+                              help="Minimum database results before triggering scraping")
+    hybrid_parser.add_argument("--max-scrape-results", type=int, default=20,
+                              help="Maximum results from scraping")
+    hybrid_parser.add_argument("--output", "-o", 
+                              help="Output file for results")
+    
     return parser
 
 
@@ -422,6 +683,10 @@ async def main_async() -> None:
             await run_orchestrator_search(args)
         elif args.command == "agent":
             run_agent_search(args)
+        elif args.command == "database":
+            run_database_search(args)
+        elif args.command == "hybrid":
+            run_hybrid_search(args)
         elif args.command == "question":
             await run_question_mode(args)
         else:
