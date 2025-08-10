@@ -16,7 +16,8 @@ import (
 	"hire.ai/pkg/keywords"
 	"hire.ai/pkg/models"
 	"hire.ai/pkg/scraper"
-	"hire.ai/pkg/storage"
+	"hire.ai/pkg/storage_test"
+	//"hire.ai/pkg/storage"
 )
 
 func main() {
@@ -120,7 +121,8 @@ func main() {
 
 type Application struct {
 	scraper          *scraper.ScraperCore
-	storage          storage.Storage
+	storage          storage_test.Storage
+	//storage        storage.Storage
 	keywordProcessor *keywords.KeywordProcessor
 	csvExporter      *export.CSVExporter
 	logger           *logrus.Logger
@@ -139,7 +141,7 @@ func NewApplication(configPath, dataDir string, logger *logrus.Logger) (*Applica
 	config := scraperCore.GetConfig()
 
 	// Initialize storage
-	fileStorage, err := storage.NewFileStorage(dataDir)
+	fileStorage, err := storage_test.NewFileStorage(dataDir)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create storage: %w", err)
 	}
